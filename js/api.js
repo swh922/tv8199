@@ -89,8 +89,8 @@ async function handleApiRequest(url) {
                 throw new Error('无效的API来源');
             }
 
-            // 对于特殊源，使用特殊处理方式
-            if ((sourceCode === 'ffzy' || sourceCode === 'jisu' || sourceCode === 'huangcang') && API_SITES[sourceCode].detail) {
+            // 对于有detail参数的源，都使用特殊处理方式
+            if (sourceCode !== 'custom' && API_SITES[sourceCode].detail) {
                 return await handleSpecialSourceDetail(id, sourceCode);
             }
             
@@ -254,18 +254,6 @@ async function handleCustomApiSpecialDetail(id, customApi) {
         console.error(`自定义API详情获取失败:`, error);
         throw error;
     }
-}
-
-// 处理极速资源详情的特殊函数
-async function handleJisuDetail(id, sourceCode) {
-    // 直接复用通用的特殊源处理函数，传入相应参数
-    return await handleSpecialSourceDetail(id, sourceCode);
-}
-
-// 处理非凡影视详情的特殊函数
-async function handleFFZYDetail(id, sourceCode) {
-    // 直接复用通用的特殊源处理函数，传入相应参数
-    return await handleSpecialSourceDetail(id, sourceCode);
 }
 
 // 通用特殊源详情处理函数

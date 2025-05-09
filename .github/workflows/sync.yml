@@ -29,6 +29,10 @@ jobs:
           target_sync_branch: main
           target_repo_token: ${{ secrets.GITHUB_TOKEN }} # automatically generated, no need to set
 
+          # 指定 Actions Bot 为提交作者，避免给上游作者发邮件
+          commit_user_name: github-actions[bot]
+          commit_user_email: 110226580+bestZwei@users.noreply.github.com
+
           # Set test_mode true to run tests instead of the true action!!
           test_mode: false
 

@@ -639,11 +639,12 @@ function clearLocalStorage() {
             
             <h3 class="text-xl font-bold text-red-500 mb-4">警告</h3>
             
-            <div class="mb-4">
-                <div class="text-sm font-medium text-gray-300 mb-4">确定要清除页面缓存吗？\n此功能会同时删除你手动添加的所有自定义 API 接口，此操作不可恢复！</div>
+            <div class="mb-0">
+                <div class="text-sm font-medium text-gray-300">确定要清除页面缓存吗？</div>
+                <div class="text-sm font-medium text-gray-300 mb-4">此功能会删除你的观看记录和自定义 API 接口，<scan class="text-red-500 font-bold">此操作不可恢复！</scan></div>
                 <div class="flex justify-end space-x-2">
-                    <button id="confirmBoxModal" class="ml-2 bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded">确定</button>
-                    <button id="cancelBoxModal" class="ml-2 bg-pink-600 hover:bg-pink-700 text-white px-4 py-2 rounded">取消</button>
+                    <button id="confirmBoxModal" class="ml-2 bg-gray-600 hover:bg-gray-700 text-white px-4 py-1 rounded">确定</button>
+                    <button id="cancelBoxModal" class="ml-2 bg-pink-600 hover:bg-pink-700 text-white px-4 py-1 rounded">取消</button>
                 </div>
             </div>
         </div>`;
