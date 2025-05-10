@@ -1,6 +1,7 @@
 // 改进的API请求处理函数
 async function handleApiRequest(url) {
     const customApi = url.searchParams.get('customApi') || '';
+    const customDetail = url.searchParams.get('customDetail') || '';
     const source = url.searchParams.get('source') || 'heimuer';
     
     try {
@@ -95,6 +96,10 @@ async function handleApiRequest(url) {
             }
             
             // 如果是自定义API，并且传递了detail参数，尝试特殊处理
+            // 优先 customDetail
+            if (sourceCode === 'custom' && customDetail) {
+                return await handleCustomApiSpecialDetail(id, customDetail);
+            }
             if (sourceCode === 'custom' && url.searchParams.get('useDetail') === 'true') {
                 return await handleCustomApiSpecialDetail(id, customApi);
             }

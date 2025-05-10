@@ -220,13 +220,10 @@ function renderCustomAPIsList() {
     customAPIs.forEach((api, index) => {
         const apiItem = document.createElement('div');
         apiItem.className = 'flex items-center justify-between p-1 mb-1 bg-[#222] rounded';
-        
-        // 根据是否是成人内容设置不同的样式
         const textColorClass = api.isAdult ? 'text-pink-400' : 'text-white';
-        
-        // 将(18+)标记移到最前面
         const adultTag = api.isAdult ? '<span class="text-xs text-pink-400 mr-1">(18+)</span>' : '';
-        
+        // 新增 detail 地址显示
+        const detailLine = api.detail ? `<div class="text-xs text-gray-400 truncate">detail: ${api.detail}</div>` : '';
         apiItem.innerHTML = `
             <div class="flex items-center flex-1 min-w-0">
                 <input type="checkbox" id="custom_api_${index}" 
@@ -238,6 +235,7 @@ function renderCustomAPIsList() {
                         ${adultTag}${api.name}
                     </div>
                     <div class="text-xs text-gray-500 truncate">${api.url}</div>
+                    ${detailLine}
                 </div>
             </div>
             <div class="flex items-center">
@@ -246,8 +244,6 @@ function renderCustomAPIsList() {
             </div>
         `;
         container.appendChild(apiItem);
-        
-        // 添加事件监听器
         apiItem.querySelector('input').addEventListener('change', function() {
             updateSelectedAPIs();
             checkAdultAPIsSelected();
@@ -258,24 +254,15 @@ function renderCustomAPIsList() {
 // 编辑自定义API
 function editCustomApi(index) {
     if (index < 0 || index >= customAPIs.length) return;
-    
     const api = customAPIs[index];
-    
-    // 填充表单数据
-    const nameInput = document.getElementById('customApiName');
-    const urlInput = document.getElementById('customApiUrl');
+    document.getElementById('customApiName').value = api.name;
+    document.getElementById('customApiUrl').value = api.url;
+    document.getElementById('customApiDetail').value = api.detail || '';
     const isAdultInput = document.getElementById('customApiIsAdult');
-    
-    nameInput.value = api.name;
-    urlInput.value = api.url;
     if (isAdultInput) isAdultInput.checked = api.isAdult || false;
-    
-    // 显示表单
     const form = document.getElementById('addCustomApiForm');
     if (form) {
         form.classList.remove('hidden');
-        
-        // 替换表单按钮操作
         const buttonContainer = form.querySelector('div:last-child');
         buttonContainer.innerHTML = `
             <button onclick="updateCustomApi(${index})" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs">更新</button>
@@ -287,50 +274,34 @@ function editCustomApi(index) {
 // 更新自定义API
 function updateCustomApi(index) {
     if (index < 0 || index >= customAPIs.length) return;
-    
     const nameInput = document.getElementById('customApiName');
     const urlInput = document.getElementById('customApiUrl');
+    const detailInput = document.getElementById('customApiDetail');
     const isAdultInput = document.getElementById('customApiIsAdult');
-    
     const name = nameInput.value.trim();
     let url = urlInput.value.trim();
+    const detail = detailInput ? detailInput.value.trim() : '';
     const isAdult = isAdultInput ? isAdultInput.checked : false;
-    
     if (!name || !url) {
         showToast('请输入API名称和链接', 'warning');
         return;
     }
-    
-    // 确保URL格式正确
     if (!/^https?:\/\/.+/.test(url)) {
         showToast('API链接格式不正确，需以http://或https://开头', 'warning');
         return;
     }
-    
-    // 移除URL末尾的斜杠
-    if (url.endsWith('/')) {
-        url = url.slice(0, -1);
-    }
-    
-    // 更新API信息
-    customAPIs[index] = { name, url, isAdult };
+    if (url.endsWith('/')) url = url.slice(0, -1);
+    // 保存 detail 字段
+    customAPIs[index] = { name, url, detail, isAdult };
     localStorage.setItem('customAPIs', JSON.stringify(customAPIs));
-    
-    // 重新渲染自定义API列表
     renderCustomAPIsList();
-    
-    // 重新检查成人API选中状态
     checkAdultAPIsSelected();
-    
-    // 恢复添加按钮
     restoreAddCustomApiButtons();
-    
-    // 清空表单并隐藏
     nameInput.value = '';
     urlInput.value = '';
+    if (detailInput) detailInput.value = '';
     if (isAdultInput) isAdultInput.checked = false;
     document.getElementById('addCustomApiForm').classList.add('hidden');
-    
     showToast('已更新自定义API: ' + name, 'success');
 }
 
@@ -339,6 +310,7 @@ function cancelEditCustomApi() {
     // 清空表单
     document.getElementById('customApiName').value = '';
     document.getElementById('customApiUrl').value = '';
+    document.getElementById('customApiDetail').value = '';
     const isAdultInput = document.getElementById('customApiIsAdult');
     if (isAdultInput) isAdultInput.checked = false;
     
@@ -420,6 +392,7 @@ function cancelAddCustomApi() {
         form.classList.add('hidden');
         document.getElementById('customApiName').value = '';
         document.getElementById('customApiUrl').value = '';
+        document.getElementById('customApiDetail').value = '';
         const isAdultInput = document.getElementById('customApiIsAdult');
         if (isAdultInput) isAdultInput.checked = false;
         
@@ -432,52 +405,39 @@ function cancelAddCustomApi() {
 function addCustomApi() {
     const nameInput = document.getElementById('customApiName');
     const urlInput = document.getElementById('customApiUrl');
+    const detailInput = document.getElementById('customApiDetail');
     const isAdultInput = document.getElementById('customApiIsAdult');
-    
     const name = nameInput.value.trim();
     let url = urlInput.value.trim();
+    const detail = detailInput ? detailInput.value.trim() : '';
     const isAdult = isAdultInput ? isAdultInput.checked : false;
-    
     if (!name || !url) {
         showToast('请输入API名称和链接', 'warning');
         return;
     }
-    
-    // 确保URL格式正确
     if (!/^https?:\/\/.+/.test(url)) {
         showToast('API链接格式不正确，需以http://或https://开头', 'warning');
         return;
     }
-    
-    // 移除URL末尾的斜杠
     if (url.endsWith('/')) {
         url = url.slice(0, -1);
     }
-    
-    // 添加到自定义API列表 - 增加isAdult属性
-    customAPIs.push({ name, url, isAdult });
+    // 保存 detail 字段
+    customAPIs.push({ name, url, detail, isAdult });
     localStorage.setItem('customAPIs', JSON.stringify(customAPIs));
-    
-    // 默认选中新添加的API
     const newApiIndex = customAPIs.length - 1;
     selectedAPIs.push('custom_' + newApiIndex);
     localStorage.setItem('selectedAPIs', JSON.stringify(selectedAPIs));
     
     // 重新渲染自定义API列表
     renderCustomAPIsList();
-    
-    // 更新选中的API数量
     updateSelectedApiCount();
-    
-    // 重新检查成人API选中状态
     checkAdultAPIsSelected();
-    
-    // 清空表单并隐藏
     nameInput.value = '';
     urlInput.value = '';
+    if (detailInput) detailInput.value = '';
     if (isAdultInput) isAdultInput.checked = false;
     document.getElementById('addCustomApiForm').classList.add('hidden');
-    
     showToast('已添加自定义API: ' + name, 'success');
 }
 
@@ -848,8 +808,12 @@ async function showDetails(id, vod_name, sourceCode) {
                 hideLoading();
                 return;
             }
-            
-            apiParams = '&customApi=' + encodeURIComponent(customApi.url) + '&source=custom';
+            // 传递 detail 字段
+            if (customApi.detail) {
+                apiParams = '&customApi=' + encodeURIComponent(customApi.url) + '&customDetail=' + encodeURIComponent(customApi.detail) + '&source=custom';
+            } else {
+                apiParams = '&customApi=' + encodeURIComponent(customApi.url) + '&source=custom';
+            }
         } else {
             // 内置API
             apiParams = '&source=' + sourceCode;
@@ -889,8 +853,14 @@ async function showDetails(id, vod_name, sourceCode) {
             episodesReversed = false; // 默认正序
             modalContent.innerHTML = `
                 <div class="flex justify-end mb-2">
-                    <button onclick="toggleEpisodeOrder('${sourceCode}')" class="px-4 py-2 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform flex items-center justify-center space-x-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <button onclick="copyLinks()" class="px-4 py-1 bg-[#222] hover:bg-[#333] border border-[#333] rounded-lg transition-colors flex items-center space-x-1 mr-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                        </svg>
+                        <span>复制视频链接</span>
+                    </button>
+                    <button onclick="toggleEpisodeOrder('${sourceCode}')" class="px-4 py-1 bg-[#222] hover:bg-[#333] border border-[#333] rounded-lg transition-colors flex items-center space-x-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v3.586L7.707 9.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 10.586V7z" clip-rule="evenodd" />
                         </svg>
                         <span>倒序排列</span>
@@ -1010,6 +980,17 @@ function renderEpisodes(vodName, sourceCode) {
             </button>
         `;
     }).join('');
+}
+
+// 复制视频链接到剪贴板
+function copyLinks() {
+    const episodes = episodesReversed ? [...currentEpisodes].reverse() : currentEpisodes;
+    const linkList = episodes.join('\r\n');
+    navigator.clipboard.writeText(linkList).then(() => {
+        showToast('视频链接列表已复制到剪贴板', 'success');
+    }).catch(err => {
+        showToast('复制失败，请检查浏览器权限', 'error');
+    });
 }
 
 // 切换排序状态的函数
