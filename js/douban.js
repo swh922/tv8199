@@ -51,7 +51,7 @@ function saveUserTags() {
 let doubanMovieTvCurrentSwitch = 'movie';
 let doubanCurrentTag = '热门';
 let doubanPageStart = 0;
-const doubanPageSize = 16; // 一次显示的项目数量
+const doubanPageSize = 24; // 一次显示的项目数量
 
 // 初始化豆瓣功能
 function initDouban() {
