@@ -707,12 +707,22 @@ function clearLocalStorage() {
                 <h3 class="text-xl font-bold text-white mb-4">提示</h3>
                 
                 <div class="mb-4">
-                    <div class="text-sm font-medium text-gray-300 mb-4">页面缓存和Cookie已清除，3 秒后自动刷新本页面。</div>
+                    <div class="text-sm font-medium text-gray-300 mb-4">页面缓存和Cookie已清除，<span id="countdown">3</span> 秒后自动刷新本页面。</div>
                 </div>
             </div>`;
-        setTimeout(() => {
-            window.location.reload();
-        }, 3000);
+
+        let countdown = 3;
+        const countdownElement = document.getElementById('countdown');
+        
+        const countdownInterval = setInterval(() => {
+            countdown--;
+            if (countdown >= 0) {
+                countdownElement.textContent = countdown;
+            } else {
+                clearInterval(countdownInterval);
+                window.location.reload();
+            }
+        }, 1000);
     });
 
     // 添加事件监听器 - 取消按钮

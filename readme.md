@@ -99,12 +99,17 @@ services:
 项目包含后端代理功能，需要支持服务器端功能的环境：
 
 ```bash
+# 首先，通过复制示例来设置 .env 文件（可选）
+cp .env.example .env
+
 # 安装依赖
 npm install
 
 # 启动开发服务器
 npm run dev
 ```
+
+访问 `http://localhost:8080` 即可使用（端口可在.env文件中通过PORT变量修改）。
 
 > ⚠️ 注意：使用简单静态服务器（如 `python -m http.server` 或 `npx http-server`）时，视频代理功能将不可用，视频无法正常播放。完整功能测试请使用 Node.js 开发服务器。
 
@@ -149,13 +154,12 @@ LibreTV 支持标准的苹果 CMS V10 API 格式。添加自定义 API 时需遵
 ## 🛠️ 技术栈
 
 - HTML5 + CSS3 + JavaScript (ES6+)
-- Tailwind CSS (通过 CDN 引入)
+- Tailwind CSS
 - HLS.js 用于 HLS 流处理
 - DPlayer 视频播放器核心
 - Cloudflare/Vercel/Netlify Serverless Functions
 - 服务端 HLS 代理和处理技术
 - localStorage 本地存储
-
 
 ## ⚠️ 免责声明
 
